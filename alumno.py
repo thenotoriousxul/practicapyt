@@ -1,4 +1,5 @@
 from arreglo import Arreglo
+import json
 
 class Alumno(Arreglo):
     def __init__(self, nombre=None, apellido_paterno=None, apellido_materno=None, 
@@ -20,6 +21,24 @@ class Alumno(Arreglo):
             self.promedio = promedio
             self.es_contenedor = False
     
+    def convertirADiccionario(self):
+        """Convierte el objeto Alumno a un diccionario"""
+        if self.es_contenedor:
+            return {"tipo": "Contenedor", "items": [item.convertirADiccionario() if hasattr(item, "convertirADiccionario") else item for item in self.items]}
+        else:
+            return {
+                "id": self.id,
+                "nombre": self.nombre,
+                "apellido_paterno": self.apellido_paterno,
+                "apellido_materno": self.apellido_materno,
+                "edad": self.edad,
+                "matricula": self.matricula,
+                "carrera": self.carrera,
+                "semestre": self.semestre,
+                "promedio": self.promedio,
+                "tipo": "Alumno"
+            }
+    
     def actualizarMatricula(self, matricula):
         self.matricula = matricula
     
@@ -38,6 +57,7 @@ class Alumno(Arreglo):
 if __name__ == "__main__":
     a1 = Alumno("Saul", "Sanchez", "Lopez", 20, "23170093", "Desarrollo y gestion de software", 3, 10, 1)
     print(a1)
+    print("Diccionario del alumno 1:", a1.convertirADiccionario())
     
     a2 = Alumno("Misael", "Trejo", "Perez", 19, "23170115", "Desarrollo y gestion de software", 4, 10, 2)
     a2.actualizarMatricula("23170125")
@@ -58,3 +78,6 @@ if __name__ == "__main__":
     print(a2)
     
     print(f"\nCantidad de alumnos: {alumnos.cantidad_alumnos()}")
+    
+    print("\nDiccionario del contenedor de alumnos:")
+    print(json.dumps(alumnos.convertirADiccionario(), indent=4, ensure_ascii=False))

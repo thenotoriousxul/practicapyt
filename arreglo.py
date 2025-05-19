@@ -4,7 +4,10 @@ class Arreglo:
     
     def agregar(self, *items):
         for item in items:
-            self.items.append(item)
+            if hasattr(item, "convertirADiccionario"):
+                self.items.append(item.convertirADiccionario())
+            else:
+                self.items.append(item)
     
     def eliminar(self, item=None, indice=None):
         try:
@@ -17,11 +20,19 @@ class Arreglo:
             return False
     
     def actualizar(self, objeto, atributo, nuevo_valor):
-        for elem in self.items:
-            if elem == objeto:
-                if hasattr(elem, atributo):
-                    setattr(elem, atributo, nuevo_valor)
+        if hasattr(objeto, "convertirADiccionario"):
+            objeto_dict = objeto.convertirADiccionario()
+            for i, elem in enumerate(self.items):
+                if isinstance(elem, dict) and elem.get('id') == objeto_dict.get('id'):
+                    self.items[i][atributo] = nuevo_valor
+                    setattr(objeto, atributo, nuevo_valor)
                     return True
+        else:
+            for elem in self.items:
+                if elem == objeto:
+                    if hasattr(elem, atributo):
+                        setattr(elem, atributo, nuevo_valor)
+                        return True
         return False
     
     def obtener(self, indice=None):

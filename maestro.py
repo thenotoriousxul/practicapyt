@@ -1,4 +1,5 @@
 from arreglo import Arreglo
+import json
 
 class Maestro(Arreglo):
     def __init__(self, nombre=None, apellido_paterno=None, apellido_materno=None, 
@@ -18,6 +19,23 @@ class Maestro(Arreglo):
             self.materia = materia
             self.es_contenedor = False
     
+    def convertirADiccionario(self):
+        """Convierte el objeto Maestro a un diccionario"""
+        if self.es_contenedor:
+            return {"tipo": "Contenedor", "items": [item.convertirADiccionario() if hasattr(item, "convertirADiccionario") else item for item in self.items]}
+        else:
+            return {
+                "id": self.id,
+                "nombre": self.nombre,
+                "apellido_paterno": self.apellido_paterno,
+                "apellido_materno": self.apellido_materno,
+                "edad": self.edad,
+                "clave": self.clave,
+                "carrera": self.carrera,
+                "materia": self.materia,
+                "tipo": "Maestro"
+            }
+    
     def __str__(self):
         if self.es_contenedor:
             return f"Total de maestros: {len(self.items)}"
@@ -29,7 +47,10 @@ class Maestro(Arreglo):
             print("Este objeto no es un contenedor.")
             return None
         for maestro in self.items:
-            if maestro.id == id:
+            if isinstance(maestro, dict):
+                if maestro.get('id') == id:
+                    return maestro
+            elif hasattr(maestro, 'id') and maestro.id == id:
                 return maestro
         print("Maestro no encontrado.")
         return None
@@ -43,6 +64,8 @@ if __name__ == "__main__":
     maestro1 = Maestro("Ramiro", "Esquivel", "Gómez", 35, "M001", "Bases de Datos en la nube", "TI", 1)
     maestro2 = Maestro("Ana", "Lilia", "Hernández", 40, "M002", "Bases de Datos para aplicaciones", "TI", 2)
     maestro3 = Maestro("Delia", "Tarango", "Pérez", 50, "M003", "Desarrollo integral", "CM", 3)
+    
+    print("Diccionario del maestro 1:", maestro1.convertirADiccionario())
     
     maestros = Maestro()
     maestros.agregar(maestro1, maestro2, maestro3)
@@ -63,9 +86,12 @@ if __name__ == "__main__":
     print("\nSe actualizó el maestro con id 1:")
     print(maestro1)
     
-    maestros.eliminar(maestro2)
-    print("\nDespués de eliminar el maestro con id 2:")
+    maestros.eliminar(maestro1.convertirADiccionario())
+    print("\nDespués de eliminar el maestro con id 1:")
     for maestro in maestros.items:
         print(maestro)
     
     print(f"\nCantidad de maestros: {maestros.cantidad_maestros()}")
+    
+    print("\nDiccionario del contenedor de maestros:")
+    print(json.dumps(maestros.convertirADiccionario(), indent=4, ensure_ascii=False))

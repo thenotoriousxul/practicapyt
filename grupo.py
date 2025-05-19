@@ -1,6 +1,7 @@
 from arreglo import Arreglo
 from alumno import Alumno
 from maestro import Maestro
+import json
 
 class Grupo(Arreglo):
     def __init__(self, nombre=None, grado=None, turno=None, salon=None, 
@@ -20,6 +21,25 @@ class Grupo(Arreglo):
             self.maestro = maestro
             self.alumnos = Alumno()
             self.es_contenedor = False
+    
+    def convertirADiccionario(self):
+        if self.es_contenedor:
+            return {"tipo": "Contenedor", "items": [item.convertirADiccionario() if hasattr(item, "convertirADiccionario") else item for item in self.items]}
+        else:
+            maestro_dict = self.maestro.convertirADiccionario() if self.maestro and hasattr(self.maestro, "convertirADiccionario") else None
+            
+            return {
+                "id": self.id,
+                "nombre": self.nombre,
+                "grado": self.grado,
+                "turno": self.turno,
+                "salon": self.salon,
+                "carrera": self.carrera,
+                "ciclo_escolar": self.ciclo_escolar,
+                "maestro": maestro_dict,
+                "alumnos": self.alumnos.convertirADiccionario() if hasattr(self.alumnos, "convertirADiccionario") else self.alumnos,
+                "tipo": "Grupo"
+            }
     
     def asignar_maestro(self, maestro):
         self.maestro = maestro
@@ -53,22 +73,9 @@ if __name__ == "__main__":
     grupo.alumnos.agregar(a1, a2)
     
     print(grupo)
+    print("\nDiccionario del grupo:")
+
+    print(json.dumps(grupo.convertirADiccionario(), indent=4, ensure_ascii=False))
     
-    grupo.alumnos.actualizar(a1, "matricula", "23170126")
-    print("\nDespués de actualizar matricula:")
-    print(a1)
     
-    grupos = Grupo()
-    grupos.agregar(grupo)
     
-    grupo2 = Grupo("Desarrollo Web", "Cuarto", "Vespertino", "402", "TI", "2023-2024", None, 2)
-    grupos.agregar(grupo2)
-    
-    m2 = Maestro("Laura", "Gómez", "Sánchez", 38, "M002", "Computación", "Frameworks", 2)
-    grupo2.asignar_maestro(m2)
-    
-    print("\nLista de grupos:")
-    for grupo in grupos.items:
-        print(grupo)
-    
-    print(f"\nCantidad de grupos: {grupos.cantidad_grupos()}")
