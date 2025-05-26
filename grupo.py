@@ -24,11 +24,21 @@ class Grupo(Arreglo):
     
     def convertirADiccionario(self):
         if self.es_contenedor:
-            return {"tipo": "Contenedor", "items": [item.convertirADiccionario() if hasattr(item, "convertirADiccionario") else item for item in self.items]}
+            return [item.convertirADiccionario() if hasattr(item, "convertirADiccionario") else item for item in self.items]
         else:
             maestro_dict = self.maestro.convertirADiccionario() if self.maestro and hasattr(self.maestro, "convertirADiccionario") else None
+            alumnos_list = []
+            if hasattr(self.alumnos, "items"):
+                for alumno in self.alumnos.items:
+                    if isinstance(alumno, dict):
+                        alumnos_list.append(alumno)
+                    elif hasattr(alumno, "convertirADiccionario"):
+                        alumnos_list.append(alumno.convertirADiccionario())
+                    else:
+                        alumnos_list.append(alumno)
             
-            return {
+            # Crear el diccionario del grupo
+            grupo_dict = {
                 "id": self.id,
                 "nombre": self.nombre,
                 "grado": self.grado,
@@ -37,9 +47,12 @@ class Grupo(Arreglo):
                 "carrera": self.carrera,
                 "ciclo_escolar": self.ciclo_escolar,
                 "maestro": maestro_dict,
-                "alumnos": self.alumnos.convertirADiccionario() if hasattr(self.alumnos, "convertirADiccionario") else self.alumnos,
+                "alumnos": alumnos_list,
                 "tipo": "Grupo"
             }
+            
+            # Devolver como arreglo de un solo elemento
+            return [grupo_dict]
     
     def asignar_maestro(self, maestro):
         self.maestro = maestro
@@ -66,16 +79,19 @@ class Grupo(Arreglo):
 if __name__ == "__main__":
     a1 = Alumno("Saul", "Sanchez", "Lopez", 18, "23170125", "TI", 3, 10, 1)
     a2 = Alumno("Diana", "Ochoa", "Martínez", 19, "23170119", "TI", 4, 10, 2)
+    a3 = Alumno("Diana", "Ochoa", "Martínez", 19, "23170119", "TI", 4, 10, 3)
     
     m1 = Maestro("Ramiro", "Esquivel", "Nuñez", 40, "M001", "TI", "Aplicaciones Web", 1)
     
     grupo = Grupo("Desarrollo Web", "Tercero", "Matutino", "301", "TI", "2023-2024", m1, 1)
-    grupo.alumnos.agregar(a1, a2)
+    grupo.alumnos.agregar(a1, a2, a3)
     
     print(grupo)
     print("\nDiccionario del grupo:")
-
+    
     print(json.dumps(grupo.convertirADiccionario(), indent=4, ensure_ascii=False))
     
+    with open("grupo_desarrollo_web.json", "w", encoding="utf-8") as archivo:
+        json.dump(grupo.convertirADiccionario(), archivo, indent=4, ensure_ascii=False)
     
-    
+    print("Archivo guardado correctamente como grupo_desarrollo_web.json")

@@ -24,9 +24,10 @@ class Alumno(Arreglo):
     def convertirADiccionario(self):
         """Convierte el objeto Alumno a un diccionario"""
         if self.es_contenedor:
-            return {"tipo": "Contenedor", "items": [item.convertirADiccionario() if hasattr(item, "convertirADiccionario") else item for item in self.items]}
+            return [item.convertirADiccionario() if hasattr(item, "convertirADiccionario") else item for item in self.items]
         else:
-            return {
+            # Crear el diccionario del alumno
+            alumno_dict = {
                 "id": self.id,
                 "nombre": self.nombre,
                 "apellido_paterno": self.apellido_paterno,
@@ -38,6 +39,9 @@ class Alumno(Arreglo):
                 "promedio": self.promedio,
                 "tipo": "Alumno"
             }
+            
+            # Devolver como arreglo de un solo elemento
+            return [alumno_dict]
     
     def actualizarMatricula(self, matricula):
         self.matricula = matricula

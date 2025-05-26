@@ -47,3 +47,5 @@ class Arreglo:
         if not self.items:
             return "No hay elementos"
         return str(len(self.items))
+    
+    
