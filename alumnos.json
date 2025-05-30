@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "nombre": "Saul",
+        "apellido_paterno": "Sanchez",
+        "apellido_materno": "Lopez",
+        "edad": 20,
+        "matricula": "23170093",
+        "carrera": "Desarrollo y gestion de software",
+        "semestre": 3,
+        "promedio": 10,
+        "tipo": "Alumno"
+    },
+    {
+        "id": 2,
+        "nombre": "Misael",
+        "apellido_paterno": "Trejo",
+        "apellido_materno": "Perez",
+        "edad": 19,
+        "matricula": "23170115",
+        "carrera": "Desarrollo y gestion de software",
+        "semestre": 4,
+        "promedio": 10,
+        "tipo": "Alumno"
+    },
+    {
+        "id": 3,
+        "nombre": "Azael",
+        "apellido_paterno": "Garcia",
+        "apellido_materno": "Candela",
+        "edad": 20,
+        "matricula": "23170022",
+        "carrera": "Desarrollo y gestion de software",
+        "semestre": 2,
+        "promedio": 10,
+        "tipo": "Alumno"
+    }
+]

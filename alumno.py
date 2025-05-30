@@ -22,11 +22,9 @@ class Alumno(Arreglo):
             self.es_contenedor = False
     
     def convertirADiccionario(self):
-        """Convierte el objeto Alumno a un diccionario"""
         if self.es_contenedor:
-            return [item.convertirADiccionario() if hasattr(item, "convertirADiccionario") else item for item in self.items]
+            return [item.convertirADiccionario()[0] if hasattr(item, "convertirADiccionario") else item for item in self.items]
         else:
-            # Crear el diccionario del alumno
             alumno_dict = {
                 "id": self.id,
                 "nombre": self.nombre,
@@ -40,8 +38,31 @@ class Alumno(Arreglo):
                 "tipo": "Alumno"
             }
             
-            # Devolver como arreglo de un solo elemento
             return [alumno_dict]
+    
+    def leerJson(archivo):
+        with open(archivo, "r", encoding="utf-8") as f:
+            datos = json.load(f)
+        return Alumno.desde_json(datos)
+    
+    def desde_json(datos):
+        alumnos = Alumno()
+        for item in datos:
+            if isinstance(item, dict) and item.get("tipo") == "Alumno":
+                alumno = Alumno(
+                    nombre=item.get("nombre"),
+                    apellido_paterno=item.get("apellido_paterno"),
+                    apellido_materno=item.get("apellido_materno"),
+                    edad=item.get("edad"),
+                    matricula=item.get("matricula"),
+                    carrera=item.get("carrera"),
+                    semestre=item.get("semestre"),
+                    promedio=item.get("promedio"),
+                    id=item.get("id")
+                )
+                alumnos.items.append(alumno)
+        return alumnos
+
     
     def actualizarMatricula(self, matricula):
         self.matricula = matricula
@@ -60,28 +81,21 @@ class Alumno(Arreglo):
 
 if __name__ == "__main__":
     a1 = Alumno("Saul", "Sanchez", "Lopez", 20, "23170093", "Desarrollo y gestion de software", 3, 10, 1)
-    print(a1)
-    print("Diccionario del alumno 1:", a1.convertirADiccionario())
-    
     a2 = Alumno("Misael", "Trejo", "Perez", 19, "23170115", "Desarrollo y gestion de software", 4, 10, 2)
-    a2.actualizarMatricula("23170125")
-    print(a2)
+    a3 = Alumno("Azael", "Garcia", "Candela", 20, "23170022", "Desarrollo y gestion de software", 2, 10, 3)
     
     alumnos = Alumno()
-    alumnos.agregar(a1)
-    alumnos.eliminar(indice=0)
-    alumnos.agregar(a2)
-    alumnos.agregar(Alumno("Azael", "Garcia", "Candela", 20, "23170022", "Desarrollo y gestion de software", 2, 10, 3))
+    alumnos.agregar(a1, a2, a3)
     
-    print("\nLista de alumnos:")
-    for alumno in alumnos.items:
-        print(alumno)
+    print("=== GUARDANDO ALUMNOS ===")
+    with open("alumnos.json", "w", encoding="utf-8") as archivo:
+        json.dump(alumnos.convertirADiccionario(), archivo, indent=4, ensure_ascii=False)
+    print("Alumnos guardados en alumnos.json")
     
-    alumnos.actualizar(a2, "carrera", "Redes y telecomunicaciones")
-    print("\nDespués de actualizar carrera:")
-    print(a2)
+    print("\n=== LEYENDO ALUMNOS ===")
+    alumnos_leidos = Alumno.leerJson("alumnos.json")
+    print("Alumnos leídos del archivo:")
+    for alumno_leido in alumnos_leidos.items:
+        print(alumno_leido)
     
-    print(f"\nCantidad de alumnos: {alumnos.cantidad_alumnos()}")
-    
-    print("\nDiccionario del contenedor de alumnos:")
-    print(json.dumps(alumnos.convertirADiccionario(), indent=4, ensure_ascii=False))
+    print(f"\nCantidad de alumnos leídos: {alumnos_leidos.cantidad_alumnos()}")

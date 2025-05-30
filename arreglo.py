@@ -4,10 +4,8 @@ class Arreglo:
     
     def agregar(self, *items):
         for item in items:
-            if hasattr(item, "convertirADiccionario"):
-                self.items.append(item.convertirADiccionario())
-            else:
-                self.items.append(item)
+            self.items.append(item)
+
     
     def eliminar(self, item=None, indice=None):
         try:
@@ -47,5 +45,3 @@ class Arreglo:
         if not self.items:
             return "No hay elementos"
         return str(len(self.items))
-    
-    
