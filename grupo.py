@@ -24,7 +24,19 @@ class Grupo(Arreglo):
     
     def convertirADiccionario(self):
         if self.es_contenedor:
-            return [item.convertirADiccionario() if hasattr(item, "convertirADiccionario") else item for item in self.items]
+            lista_grupos = [item.convertirADiccionario() if hasattr(item, "convertirADiccionario") else item for item in self.items]
+            
+            grupos_planos = []
+            for grupo in lista_grupos:
+                if isinstance(grupo, list):
+                    grupos_planos.extend(grupo)
+                else:
+                    grupos_planos.append(grupo)
+            
+            if len(grupos_planos) == 1:
+                return grupos_planos[0]
+            else:
+                return grupos_planos
         else:
             maestro_dict = self.maestro.convertirADiccionario()[0] if self.maestro and hasattr(self.maestro, "convertirADiccionario") else None
             alumnos_list = []
@@ -52,20 +64,20 @@ class Grupo(Arreglo):
             
             return [grupo_dict]
     
-    def leerJson(archivo):
+    def leerJson(self, archivo):
         with open(archivo, "r", encoding="utf-8") as f:
             datos = json.load(f)
-            return Grupo.desde_json(datos)
-        
+        return Grupo.desde_json(datos)
+
 
     def desde_json(datos):
         grupos = Grupo()
         
-        for item in datos:
-            if isinstance(item, dict) and item.get("tipo") == "Grupo":
+        if isinstance(datos, dict):
+            if datos.get("tipo") == "Grupo":
                 maestro = None
-                if item.get("maestro"):
-                    maestro_data = item["maestro"]
+                if datos.get("maestro"):
+                    maestro_data = datos["maestro"]
                     maestro = Maestro(
                         nombre=maestro_data.get("nombre"),
                         apellido_paterno=maestro_data.get("apellido_paterno"),
@@ -78,18 +90,18 @@ class Grupo(Arreglo):
                     )
                 
                 grupo = Grupo(
-                    nombre=item.get("nombre"),
-                    grado=item.get("grado"),
-                    turno=item.get("turno"),
-                    salon=item.get("salon"),
-                    carrera=item.get("carrera"),
-                    ciclo_escolar=item.get("ciclo_escolar"),
+                    nombre=datos.get("nombre"),
+                    grado=datos.get("grado"),
+                    turno=datos.get("turno"),
+                    salon=datos.get("salon"),
+                    carrera=datos.get("carrera"),
+                    ciclo_escolar=datos.get("ciclo_escolar"),
                     maestro=maestro,
-                    id=item.get("id")
+                    id=datos.get("id")
                 )
                 
-                if item.get("alumnos"):
-                    for alumno_data in item["alumnos"]:
+                if datos.get("alumnos"):
+                    for alumno_data in datos["alumnos"]:
                         if isinstance(alumno_data, dict):
                             alumno = Alumno(
                                 nombre=alumno_data.get("nombre"),
@@ -106,10 +118,61 @@ class Grupo(Arreglo):
                 
                 grupos.items.append(grupo)
         
+        elif isinstance(datos, list):
+            for item in datos:
+                if isinstance(item, dict) and item.get("tipo") == "Grupo":
+                    maestro = None
+                    if item.get("maestro"):
+                        maestro_data = item["maestro"]
+                        maestro = Maestro(
+                            nombre=maestro_data.get("nombre"),
+                            apellido_paterno=maestro_data.get("apellido_paterno"),
+                            apellido_materno=maestro_data.get("apellido_materno"),
+                            edad=maestro_data.get("edad"),
+                            clave=maestro_data.get("clave"),
+                            carrera=maestro_data.get("carrera"),
+                            materia=maestro_data.get("materia"),
+                            id=maestro_data.get("id")
+                        )
+                    
+                    grupo = Grupo(
+                        nombre=item.get("nombre"),
+                        grado=item.get("grado"),
+                        turno=item.get("turno"),
+                        salon=item.get("salon"),
+                        carrera=item.get("carrera"),
+                        ciclo_escolar=item.get("ciclo_escolar"),
+                        maestro=maestro,
+                        id=item.get("id")
+                    )
+                    
+                    if item.get("alumnos"):
+                        for alumno_data in item["alumnos"]:
+                            if isinstance(alumno_data, dict):
+                                alumno = Alumno(
+                                    nombre=alumno_data.get("nombre"),
+                                    apellido_paterno=alumno_data.get("apellido_paterno"),
+                                    apellido_materno=alumno_data.get("apellido_materno"),
+                                    edad=alumno_data.get("edad"),
+                                    matricula=alumno_data.get("matricula"),
+                                    carrera=alumno_data.get("carrera"),
+                                    semestre=alumno_data.get("semestre"),
+                                    promedio=alumno_data.get("promedio"),
+                                    id=alumno_data.get("id")
+                                )
+                                grupo.alumnos.items.append(alumno)
+                    
+                    grupos.items.append(grupo)
+        
         return grupos
     
     def asignar_maestro(self, maestro):
         self.maestro = maestro
+
+    def guardarJson(self, archivo):
+        with open(archivo, "w", encoding="utf-8") as f:
+            json.dump(self.convertirADiccionario(), f, indent=4, ensure_ascii=False)
+
     
     def cambiarNombre(self, nombre):
         self.nombre = nombre
@@ -131,45 +194,6 @@ class Grupo(Arreglo):
         return len(self.items) if self.es_contenedor else 0
 
 if __name__ == "__main__":
-    a1 = Alumno("Saul", "Sanchez", "Lopez", 18, "23170125", "TI", 3, 10, 1)
-    a2 = Alumno("Diana", "Ochoa", "Martínez", 19, "23170119", "TI", 4, 10, 2)
-    a3 = Alumno("Carlos", "Ramírez", "López", 20, "23170130", "TI", 2, 10, 3)
-    a4 = Alumno("Fernanda", "Gomez", "Vega", 21, "23170133", "TI", 2, 10, 4)
-    a5 = Alumno("Luis", "Perez", "Cruz", 22, "23170144", "TI", 1, 10, 5)
-    a6 = Alumno("Sofia", "Lopez", "Ramos", 20, "23170148", "TI", 1, 10, 6)
-
-    m1 = Maestro("Ramiro", "Esquivel", "Nuñez", 40, "M001", "TI", "Aplicaciones Web", 1)
-    m2 = Maestro("María", "Hernández", "Silva", 38, "M002", "TI", "Base de Datos", 2)
-
-    grupo1 = Grupo("Desarrollo Web", "Tercero", "Matutino", "301", "TI", "2023-2024", m1, 1)
-    grupo1.alumnos.items.append(a1)
-    grupo1.alumnos.items.append(a2)
-
-    grupo2 = Grupo("Base de Datos", "Segundo", "Vespertino", "201", "TI", "2023-2024", m2, 2)
-    grupo2.alumnos.items.append(a3)
-    grupo2.alumnos.items.append(a4)
-
-    grupo3 = Grupo("Redes", "Primero", "Matutino", "101", "TI", "2023-2024", m2, 3)
-    grupo3.alumnos.items.append(a5)
-    grupo3.alumnos.items.append(a6)
-
-    print("=== GUARDANDO GRUPOS ===")
-    todos_los_grupos = Arreglo()
-    todos_los_grupos.items.append(grupo1)
-    todos_los_grupos.items.append(grupo2)
-    todos_los_grupos.items.append(grupo3)
-
-    with open("grupos.json", "w", encoding="utf-8") as archivo:
-        json.dump([dic for g in todos_los_grupos.items for dic in g.convertirADiccionario()], archivo, indent=4, ensure_ascii=False)
-    print("Grupos guardados en grupos.json")
-
-    print("\n=== LEYENDO GRUPOS ===")
-    grupos_leidos = Grupo.leerJson("grupos.json")
-    print("Grupos leídos del archivo:")
-    for grupo_leido in grupos_leidos.items:
-        print(f"\nGrupo: {grupo_leido}")
-        print("Alumnos en el grupo:")
-        for alumno in grupo_leido.alumnos.items:
-            print(f"  - {alumno}")
-        if grupo_leido.maestro:
-            print(f"Maestro del grupo: {grupo_leido.maestro}")
+    grupos = Grupo()  
+    grupos = grupos.leerJson("grupos.json")
+    grupos.guardarJson("grupos_guardados.json")

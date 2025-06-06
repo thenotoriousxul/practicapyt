@@ -3,10 +3,10 @@ import json
 
 class Maestro(Arreglo):
     def __init__(self, nombre=None, apellido_paterno=None, apellido_materno=None, 
-                edad=None, clave=None, carrera=None, materia=None, id=None):
+                 edad=None, clave=None, carrera=None, materia=None, id=None):
         if nombre is None and apellido_paterno is None and apellido_materno is None and \
            edad is None and clave is None and carrera is None and materia is None and id is None:
-            Arreglo.__init__(self)
+            super().__init__()
             self.es_contenedor = True
         else:
             self.id = id
@@ -18,12 +18,13 @@ class Maestro(Arreglo):
             self.carrera = carrera
             self.materia = materia
             self.es_contenedor = False
-    
+
     def convertirADiccionario(self):
         if self.es_contenedor:
-            return [item.convertirADiccionario()[0] if hasattr(item, "convertirADiccionario") else item for item in self.items]
+            lista_maestros = [item.convertirADiccionario()[0] if hasattr(item, "convertirADiccionario") else item for item in self.items]
+            return lista_maestros[0] if len(lista_maestros) == 1 else lista_maestros
         else:
-            maestro_dict = {
+            return [{
                 "id": self.id,
                 "nombre": self.nombre,
                 "apellido_paterno": self.apellido_paterno,
@@ -33,39 +34,52 @@ class Maestro(Arreglo):
                 "carrera": self.carrera,
                 "materia": self.materia,
                 "tipo": "Maestro"
-            }
-            
-            return [maestro_dict]
-    
-    def leerJson(archivo):
+            }]
+
+    def leerJson(self, archivo):
         with open(archivo, "r", encoding="utf-8") as f:
             datos = json.load(f)
-        return Maestro.desde_json(datos)
-    
-    def desdeJson(datos):
+        return self.desde_json(datos)
+
+    def desde_json(self, datos):
         maestros = Maestro()
-        for item in datos:
-            if isinstance(item, dict) and item.get("tipo") == "Maestro":
-                maestro = Maestro(
-                    nombre=item.get("nombre"),
-                    apellido_paterno=item.get("apellido_paterno"),
-                    apellido_materno=item.get("apellido_materno"),
-                    edad=item.get("edad"),
-                    clave=item.get("clave"),
-                    carrera=item.get("carrera"),
-                    materia=item.get("materia"),
-                    id=item.get("id")
-                )
-                maestros.items.append(maestro)
-        
+
+        if isinstance(datos, dict) and datos.get("tipo") == "Maestro":
+            maestro = Maestro(
+                nombre=datos.get("nombre"),
+                apellido_paterno=datos.get("apellido_paterno"),
+                apellido_materno=datos.get("apellido_materno"),
+                edad=datos.get("edad"),
+                clave=datos.get("clave"),
+                carrera=datos.get("carrera"),
+                materia=datos.get("materia"),
+                id=datos.get("id")
+            )
+            maestros.items.append(maestro)
+
+        elif isinstance(datos, list):
+            for item in datos:
+                if isinstance(item, dict) and item.get("tipo") == "Maestro":
+                    maestro = Maestro(
+                        nombre=item.get("nombre"),
+                        apellido_paterno=item.get("apellido_paterno"),
+                        apellido_materno=item.get("apellido_materno"),
+                        edad=item.get("edad"),
+                        clave=item.get("clave"),
+                        carrera=item.get("carrera"),
+                        materia=item.get("materia"),
+                        id=item.get("id")
+                    )
+                    maestros.items.append(maestro)
+
         return maestros
-    
+
     def __str__(self):
         if self.es_contenedor:
             return f"Total de maestros: {len(self.items)}"
         return (f"Maestro: {self.nombre} {self.apellido_paterno} {self.apellido_materno}, "
                 f"Edad: {self.edad}, Clave: {self.clave}, Carrera: {self.carrera}, Materia: {self.materia}")
-    
+
     def buscar(self, id):
         if not self.es_contenedor:
             print("Este objeto no es un contenedor.")
@@ -78,34 +92,18 @@ class Maestro(Arreglo):
                 return maestro
         print("Maestro no encontrado.")
         return None
-    
+
     def cantidad_maestros(self):
-        if self.es_contenedor:
-            return len(self.items)
-        return 0
+        return len(self.items) if self.es_contenedor else 0
+
+    def guardarJson(self, archivo):
+        with open(archivo, "w", encoding="utf-8") as f:
+            json.dump(self.convertirADiccionario(), f, indent=4, ensure_ascii=False)
 
 if __name__ == "__main__":
-    maestro1 = Maestro("Ramiro", "Esquivel", "Gómez", 35, "M001", "TI", "Bases de Datos en la nube", 1)
-    maestro2 = Maestro("Ana", "Lilia", "Hernández", 40, "M002", "TI", "Bases de Datos para aplicaciones", 2)
-    maestro3 = Maestro("Delia", "Tarango", "Pérez", 50, "M003", "CM", "Desarrollo integral", 3)
-    
     maestros = Maestro()
-    maestros.agregar(maestro1, maestro2, maestro3)
-    
-    print("=== GUARDANDO MAESTROS ===")
-    with open("maestros.json", "w", encoding="utf-8") as archivo:
-        json.dump(maestros.convertirADiccionario(), archivo, indent=4, ensure_ascii=False)
-    print("Maestros guardados en maestros.json")
-    
-    print("\n=== LEYENDO MAESTROS ===")
-    maestros_leidos = Maestro.leerJson("maestros.json")
-    print("Maestros leídos del archivo:")
-    for maestro_leido in maestros_leidos.items:
-        print(maestro_leido)
-    
-    print(f"\nCantidad de maestros leídos: {maestros_leidos.cantidad_maestros()}")
-    
-    print("\n=== PROBANDO BÚSQUEDA ===")
-    encontrado = maestros_leidos.buscar(2)
-    if encontrado:
-        print(f"Maestro encontrado: {encontrado}")
+    maestros = maestros.leerJson("maestros.json")
+    print(f"Maestros leídos: {maestros.cantidad_maestros()}")
+
+    maestros.guardarJson("maestros_guardados.json")
+    print("Datos guardados en 'maestros_guardados.json'")

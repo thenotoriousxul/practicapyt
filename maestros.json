@@ -1,0 +1,35 @@
+[
+    {
+        "id": 1,
+        "nombre": "Ramiro",
+        "apellido_paterno": "Esquivel",
+        "apellido_materno": "Gómez",
+        "edad": 35,
+        "clave": "M001",
+        "carrera": "TI",
+        "materia": "Bases de Datos en la nube",
+        "tipo": "Maestro"
+    },
+    {
+        "id": 2,
+        "nombre": "Ana",
+        "apellido_paterno": "Lilia",
+        "apellido_materno": "Hernández",
+        "edad": 40,
+        "clave": "M002",
+        "carrera": "TI",
+        "materia": "Bases de Datos para aplicaciones",
+        "tipo": "Maestro"
+    },
+    {
+        "id": 3,
+        "nombre": "Delia",
+        "apellido_paterno": "Tarango",
+        "apellido_materno": "Pérez",
+        "edad": 50,
+        "clave": "M003",
+        "carrera": "CM",
+        "materia": "Desarrollo integral",
+        "tipo": "Maestro"
+    }
+]
