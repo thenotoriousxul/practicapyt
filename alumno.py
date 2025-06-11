@@ -2,6 +2,14 @@ from arreglo import Arreglo
 import json
 
 class Alumno(Arreglo):
+    @staticmethod
+    def obtener_ultimo_id(datos):
+        if isinstance(datos, dict):
+            return datos.get("id", 0)
+        elif isinstance(datos, list):
+            return max([item.get("id", 0) for item in datos], default=0)
+        return 0
+
     def __init__(self, nombre=None, apellido_paterno=None, apellido_materno=None, 
                  edad=None, matricula=None, carrera=None, semestre=None, promedio=None, id=None):
         if nombre is None and apellido_paterno is None and apellido_materno is None and \
@@ -23,12 +31,10 @@ class Alumno(Arreglo):
 
     def convertirADiccionario(self):
         if self.es_contenedor:
+            if not self.items:
+                return []
             lista_alumnos = [item.convertirADiccionario()[0] if hasattr(item, "convertirADiccionario") else item for item in self.items]
-            
-            if len(lista_alumnos) == 1:
-                return lista_alumnos[0]
-            else:
-                return lista_alumnos
+            return lista_alumnos
         else:
             alumno_dict = {
                 "id": self.id,
@@ -43,17 +49,17 @@ class Alumno(Arreglo):
                 "tipo": "Alumno"
             } 
             return [alumno_dict]
-        
-    
+
+    @staticmethod
     def leerJson(archivo):
         with open(archivo, "r", encoding="utf-8") as f:
             datos = json.load(f)
         return Alumno.desde_json(datos)
 
-
+    @staticmethod
     def desde_json(datos):
         alumnos = Alumno()
-
+        
         if isinstance(datos, dict):
             if datos.get("tipo") == "Alumno":
                 alumno = Alumno(
@@ -68,8 +74,7 @@ class Alumno(Arreglo):
                     id=datos.get("id")
                 )
                 alumnos.items.append(alumno)
-
-        elif isinstance(datos, list): 
+        elif isinstance(datos, list):
             for item in datos:
                 if isinstance(item, dict) and item.get("tipo") == "Alumno":
                     alumno = Alumno(
@@ -84,11 +89,9 @@ class Alumno(Arreglo):
                         id=item.get("id")
                     )
                     alumnos.items.append(alumno)
-
+        
         return alumnos
 
-    
-        
     def actualizarMatricula(self, matricula):
         self.matricula = matricula
 

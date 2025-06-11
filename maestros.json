@@ -31,5 +31,16 @@
         "carrera": "CM",
         "materia": "Desarrollo integral",
         "tipo": "Maestro"
+    },
+    {
+        "id": 4,
+        "nombre": "sa",
+        "apellido_paterno": "sa",
+        "apellido_materno": "sa",
+        "edad": "sa",
+        "clave": "sa",
+        "carrera": "sa",
+        "materia": "sa",
+        "tipo": "Maestro"
     }
 ]

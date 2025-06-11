@@ -64,12 +64,13 @@ class Grupo(Arreglo):
             
             return [grupo_dict]
     
-    def leerJson(self, archivo):
+    @staticmethod
+    def leerJson(archivo):
         with open(archivo, "r", encoding="utf-8") as f:
             datos = json.load(f)
         return Grupo.desde_json(datos)
 
-
+    @staticmethod
     def desde_json(datos):
         grupos = Grupo()
         

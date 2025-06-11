@@ -139,5 +139,52 @@
             }
         ],
         "tipo": "Grupo"
+    },
+    {
+        "id": 4,
+        "nombre": "new",
+        "grado": "new",
+        "turno": "new",
+        "salon": "new",
+        "carrera": "new",
+        "ciclo_escolar": "new",
+        "maestro": {
+            "id": 1,
+            "nombre": "Ramiro",
+            "apellido_paterno": "Esquivel",
+            "apellido_materno": "Gómez",
+            "edad": 35,
+            "clave": "M001",
+            "carrera": "TI",
+            "materia": "Bases de Datos en la nube",
+            "tipo": "Maestro"
+        },
+        "alumnos": [
+            {
+                "id": 4,
+                "nombre": "Misael Ernesto",
+                "apellido_paterno": "Limon",
+                "apellido_materno": "Perez",
+                "edad": "20",
+                "matricula": "23170125",
+                "carrera": "TI",
+                "semestre": "5A",
+                "promedio": "10",
+                "tipo": "Alumno"
+            }
+        ],
+        "tipo": "Grupo"
+    },
+    {
+        "id": null,
+        "nombre": "sa",
+        "grado": "as",
+        "turno": "as",
+        "salon": "sa",
+        "carrera": 5,
+        "ciclo_escolar": null,
+        "maestro": null,
+        "alumnos": [],
+        "tipo": "Grupo"
     }
 ]

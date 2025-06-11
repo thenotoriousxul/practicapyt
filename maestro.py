@@ -36,12 +36,14 @@ class Maestro(Arreglo):
                 "tipo": "Maestro"
             }]
 
-    def leerJson(self, archivo):
+    @staticmethod
+    def leerJson(archivo):
         with open(archivo, "r", encoding="utf-8") as f:
             datos = json.load(f)
-        return self.desde_json(datos)
+        return Maestro.desde_json(datos)
 
-    def desde_json(self, datos):
+    @staticmethod
+    def desde_json(datos):
         maestros = Maestro()
 
         if isinstance(datos, dict) and datos.get("tipo") == "Maestro":
