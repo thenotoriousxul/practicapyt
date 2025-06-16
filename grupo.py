@@ -2,6 +2,7 @@ from arreglo import Arreglo
 from alumno import Alumno
 from maestro import Maestro
 import json
+from mongodb_manager import MongoDBManager
 
 class Grupo(Arreglo):
     def __init__(self, nombre=None, grado=None, turno=None, salon=None, 
@@ -10,6 +11,7 @@ class Grupo(Arreglo):
            carrera is None and ciclo_escolar is None and maestro is None and id is None:
             Arreglo.__init__(self)
             self.es_contenedor = True
+            self.mongo_manager = MongoDBManager()
         else:
             self.id = id
             self.nombre = nombre
@@ -171,8 +173,12 @@ class Grupo(Arreglo):
         self.maestro = maestro
 
     def guardarJson(self, archivo):
+        datos = self.convertirADiccionario()
         with open(archivo, "w", encoding="utf-8") as f:
-            json.dump(self.convertirADiccionario(), f, indent=4, ensure_ascii=False)
+            json.dump(datos, f, indent=4, ensure_ascii=False)
+        
+        if self.es_contenedor:
+            self.mongo_manager.guardar(archivo, datos)
 
     
     def cambiarNombre(self, nombre):

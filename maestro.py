@@ -1,5 +1,6 @@
 from arreglo import Arreglo
 import json
+from mongodb_manager import MongoDBManager
 
 class Maestro(Arreglo):
     def __init__(self, nombre=None, apellido_paterno=None, apellido_materno=None, 
@@ -8,6 +9,7 @@ class Maestro(Arreglo):
            edad is None and clave is None and carrera is None and materia is None and id is None:
             super().__init__()
             self.es_contenedor = True
+            self.mongo_manager = MongoDBManager()
         else:
             self.id = id
             self.nombre = nombre
@@ -99,8 +101,12 @@ class Maestro(Arreglo):
         return len(self.items) if self.es_contenedor else 0
 
     def guardarJson(self, archivo):
+        datos = self.convertirADiccionario()
         with open(archivo, "w", encoding="utf-8") as f:
-            json.dump(self.convertirADiccionario(), f, indent=4, ensure_ascii=False)
+            json.dump(datos, f, indent=4, ensure_ascii=False)
+        
+        if self.es_contenedor:
+            self.mongo_manager.guardar(archivo, datos)
 
 if __name__ == "__main__":
     maestros = Maestro()

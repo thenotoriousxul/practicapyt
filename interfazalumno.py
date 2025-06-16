@@ -1,6 +1,7 @@
 from alumno import Alumno
 import json
 import os
+from arreglo import Arreglo
 
 class InterfazAlumno:
     def __init__(self, contenedor_alumnos=None):
@@ -19,19 +20,11 @@ class InterfazAlumno:
             return 1
         return max(alumno.id for alumno in self.alumnos.items) + 1
 
-    def verificar_archivo(self):
-        if not self.contenedor_proporcionado and not os.path.exists("alumnos.json"):
-            print("Error: El archivo alumnos.json no existe")
-            return False
-        return True
-
     def guardar_cambios(self):
         if not self.contenedor_proporcionado:
             self.alumnos.guardarJson("alumnos.json")
 
     def crearAlumno(self):
-        if not self.verificar_archivo():
-            return
         nombre = input("Ingrese el nombre del alumno: ")
         apellido_paterno = input("Ingrese el apellido paterno del alumno: ")
         apellido_materno = input("Ingrese el apellido materno del alumno: ")
@@ -101,8 +94,7 @@ class InterfazAlumno:
         print("Alumno actualizado correctamente")
 
     def eliminarAlumno(self):
-        if not self.verificar_archivo():
-            return
+
         self.mostrarAlumnos()
         id_alumno = input("\nIngrese el ID del alumno a eliminar: ")
         
@@ -142,4 +134,8 @@ class InterfazAlumno:
 if __name__ == "__main__":
     interfaz = InterfazAlumno()
     interfaz.menu_interactivo()
+
+    # contenedor = Arreglo()
+    # interfaz = InterfazAlumno(contenedor_alumnos=contenedor)
+    # interfaz.menu_interactivo()
     

@@ -37,6 +37,30 @@
     },
     {
         "id": 4,
+        "nombre": "saul",
+        "apellido_paterno": "sanchez",
+        "apellido_materno": "lopez",
+        "edad": "23",
+        "matricula": "23170125",
+        "carrera": "ti",
+        "semestre": "5",
+        "promedio": "10",
+        "tipo": "Alumno"
+    },
+    {
+        "id": 5,
+        "nombre": "azael",
+        "apellido_paterno": "garcia",
+        "apellido_materno": "garza",
+        "edad": "18",
+        "matricula": "23170125",
+        "carrera": "ti",
+        "semestre": "5",
+        "promedio": "10",
+        "tipo": "Alumno"
+    },
+    {
+        "id": 6,
         "nombre": "sa",
         "apellido_paterno": "sa",
         "apellido_materno": "sa",
@@ -45,18 +69,6 @@
         "carrera": "sa",
         "semestre": "sa",
         "promedio": "sa",
-        "tipo": "Alumno"
-    },
-    {
-        "id": 5,
-        "nombre": "",
-        "apellido_paterno": "",
-        "apellido_materno": "",
-        "edad": "",
-        "matricula": "",
-        "carrera": "",
-        "semestre": "",
-        "promedio": "",
         "tipo": "Alumno"
     }
 ]

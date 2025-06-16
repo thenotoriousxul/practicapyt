@@ -1,48 +1,94 @@
 from grupo import Grupo
 from maestro import Maestro
 from alumno import Alumno
+from arreglo import Arreglo
 import json
 import os
 
 class InterfazGrupo:
-    def __init__(self, contenedor_grupos=None, contenedor_alumnos=None):
+    def __init__(self, contenedor_grupos=None):
+        self.contenedor_proporcionado = contenedor_grupos is not None
         if contenedor_grupos is None:
+            self.grupos = Grupo()
             try:
                 self.grupos = Grupo.leerJson("grupos.json")
             except FileNotFoundError:
-                self.grupos = Grupo()
-            self.contenedor_proporcionado = False
-        else:
-            self.grupos = contenedor_grupos
-            self.contenedor_proporcionado = True
-            
-        self.contenedor_alumnos = contenedor_alumnos
+                pass
 
     def obtener_siguiente_id(self):
         if not self.grupos.items:
             return 1
         return max(grupo.id for grupo in self.grupos.items) + 1
+    
+    def asignar_alumnos(self, grupo):
+        try:
+            alumno = Alumno()
+            alumnos = alumno.leerJson("alumnos.json")
+            if not alumnos.items:
+                print("No hay alumnos registrados.")
+                return
+
+            print("\nAlumnos disponibles:")
+            for alumno in alumnos.items:
+                print(f"ID: {alumno.id} - {alumno.nombre} {alumno.apellido_paterno} {alumno.apellido_materno}")
+
+            while True:
+                id_alumno = input("Ingrese el ID del alumno a asignar (o presione Enter para terminar): ")
+                if id_alumno == "":
+                    break
+
+                alumno_encontrado = next((a for a in alumnos.items if str(a.id) == id_alumno), None)
+                if alumno_encontrado:
+                    grupo.alumnos.items.append(alumno_encontrado)
+                    print("Alumno asignado con éxito.")
+                else:
+                    print("Alumno no encontrado.")
+        except FileNotFoundError:
+            print("Archivo de alumnos no encontrado.")
+
 
     def crearGrupo(self):
-        if not self.contenedor_proporcionado and not os.path.exists("grupos.json"):
-            print("Error: El archivo grupos.json no existe")
-            return
-            
         nombre = input("Ingrese el nombre del grupo: ")
-        capacidad = input("Ingrese la capacidad del grupo: ")
-        horario = input("Ingrese el horario del grupo: ")
-        aula = input("Ingrese el aula del grupo: ")
+        grado = input("Ingrese el grado del grupo: ")
+        turno = input("Ingrese el turno del grupo: ")
+        salon = input("Ingrese el salón del grupo: ")
+        carrera = input("Ingrese la carrera del grupo: ")
+        ciclo_escolar = input("Ingrese el ciclo escolar del grupo: ")
+        
+        try:
+            maestro = Maestro()
+            maestros = maestro.leerJson("maestros.json")
+            if not maestros.items:
+                print("No hay maestros registrados. Primero debe registrar maestros.")
+                return
+            
+            print("\nMaestros disponibles:")
+            for maestro in maestros.items:
+                print(f"ID: {maestro.id} - {maestro.nombre} {maestro.apellido_paterno} {maestro.apellido_materno}")
+            
+            id_maestro = input("\nIngrese el ID del maestro para el grupo: ")
+            maestro_encontrado = next((m for m in maestros.items if str(m.id) == id_maestro), None)
+            
+            if maestro_encontrado is None:
+                print("Maestro no encontrado")
+                return
+        except FileNotFoundError:
+            print("No hay maestros registrados. Primero debe registrar maestros.")
+            return
         
         nuevo_id = self.obtener_siguiente_id()
-        grupo = Grupo(nombre, capacidad, horario, aula, nuevo_id)
+        grupo = Grupo(nombre, grado, turno, salon, carrera, ciclo_escolar, maestro_encontrado, nuevo_id)
+
+        self.asignar_alumnos(grupo)
+
         self.grupos.agregar(grupo)
-        
+
         if not self.contenedor_proporcionado:
             self.grupos.guardarJson("grupos.json")
             print("Cambios guardados en archivo")
         else:
             print("Los cambios se mantienen en memoria")
-            
+
         print(f"Grupo creado correctamente con ID: {nuevo_id}")
 
     def mostrarGrupos(self):
@@ -54,19 +100,19 @@ class InterfazGrupo:
         for grupo in self.grupos.items:
             print(f"\nID: {grupo.id}")
             print(f"Nombre: {grupo.nombre}")
-            print(f"Capacidad: {grupo.capacidad}")
-            print(f"Horario: {grupo.horario}")
-            print(f"Aula: {grupo.aula}")
+            print(f"Grado: {grupo.grado}")
+            print(f"Turno: {grupo.turno}")
+            print(f"Salón: {grupo.salon}")
+            print(f"Carrera: {grupo.carrera}")
+            print(f"Ciclo Escolar: {grupo.ciclo_escolar}")
+            if grupo.maestro:
+                print(f"Maestro: {grupo.maestro.nombre} {grupo.maestro.apellido_paterno} {grupo.maestro.apellido_materno}")
             print("Alumnos:")
             for alumno in grupo.alumnos.items:
                 print(f"  - {alumno.nombre} {alumno.apellido_paterno} {alumno.apellido_materno}")
             print("-" * 50)
 
     def actualizarGrupo(self):
-        if not self.contenedor_proporcionado and not os.path.exists("grupos.json"):
-            print("Error: El archivo grupos.json no existe")
-            return
-            
         self.mostrarGrupos()
         id_grupo = input("\nIngrese el ID del grupo a actualizar: ")
         
@@ -82,105 +128,57 @@ class InterfazGrupo:
         
         print("\nIngrese los nuevos datos (deje en blanco para mantener el valor actual):")
         grupo_encontrado.nombre = input(f"Nuevo nombre [{grupo_encontrado.nombre}]: ") or grupo_encontrado.nombre
-        grupo_encontrado.capacidad = input(f"Nueva capacidad [{grupo_encontrado.capacidad}]: ") or grupo_encontrado.capacidad
-        grupo_encontrado.horario = input(f"Nuevo horario [{grupo_encontrado.horario}]: ") or grupo_encontrado.horario
-        grupo_encontrado.aula = input(f"Nueva aula [{grupo_encontrado.aula}]: ") or grupo_encontrado.aula
-        
+        grupo_encontrado.grado = input(f"Nuevo grado [{grupo_encontrado.grado}]: ") or grupo_encontrado.grado
+        grupo_encontrado.turno = input(f"Nuevo turno [{grupo_encontrado.turno}]: ") or grupo_encontrado.turno
+        grupo_encontrado.salon = input(f"Nuevo salón [{grupo_encontrado.salon}]: ") or grupo_encontrado.salon
+        grupo_encontrado.carrera = input(f"Nueva carrera [{grupo_encontrado.carrera}]: ") or grupo_encontrado.carrera
+        grupo_encontrado.ciclo_escolar = input(f"Nuevo ciclo escolar [{grupo_encontrado.ciclo_escolar}]: ") or grupo_encontrado.ciclo_escolar
+
+        try:
+            maestro = Maestro()
+            maestros = maestro.leerJson("maestros.json")
+            if maestros.items:
+                print("\nMaestros disponibles:")
+                for maestro in maestros.items:
+                    print(f"ID: {maestro.id} - {maestro.nombre} {maestro.apellido_paterno} {maestro.apellido_materno}")
+                
+                id_maestro = input("\nIngrese el ID del nuevo maestro (deje en blanco para mantener el actual): ")
+                if id_maestro:
+                    maestro_encontrado = None
+                    for maestro in maestros.items:
+                        if str(maestro.id) == id_maestro:
+                            maestro_encontrado = maestro
+                            break
+                    
+                    if maestro_encontrado:
+                        grupo_encontrado.maestro = maestro_encontrado
+                    else:
+                        print("Maestro no encontrado")
+        except FileNotFoundError:
+            print("No hay maestros registrados")
+
         if not self.contenedor_proporcionado:
             self.grupos.guardarJson("grupos.json")
             print("Cambios guardados en archivo")
         else:
             print("Los cambios se mantienen en memoria")
-            
-        print("Grupo actualizado correctamente")
-
+        
     def eliminarGrupo(self):
-        if not self.contenedor_proporcionado and not os.path.exists("grupos.json"):
-            print("Error: El archivo grupos.json no existe")
-            return
-            
         self.mostrarGrupos()
         id_grupo = input("\nIngrese el ID del grupo a eliminar: ")
         
         for i, grupo in enumerate(self.grupos.items):
             if str(grupo.id) == id_grupo:
                 del self.grupos.items[i]
-                if not self.contenedor_proporcionado:
-                    self.grupos.guardarJson("grupos.json")
-                    print("Cambios guardados en archivo")
-                else:
-                    print("Los cambios se mantienen en memoria")
+                self.grupos.guardarJson("grupos.json")
                 print("Grupo eliminado correctamente")
                 return
         
         print("Grupo no encontrado")
 
-    def agregarAlumnoAGrupo(self):
-        if not self.contenedor_proporcionado and not os.path.exists("grupos.json"):
-            print("Error: El archivo grupos.json no existe")
-            return
-            
-        self.mostrarGrupos()
-        id_grupo = input("\nIngrese el ID del grupo al que desea agregar un alumno: ")
-        
-        grupo_encontrado = None
-        for grupo in self.grupos.items:
-            if str(grupo.id) == id_grupo:
-                grupo_encontrado = grupo
-                break
-        
-        if grupo_encontrado is None:
-            print("Grupo no encontrado")
-            return
 
-        alumnos = None
-        if self.contenedor_alumnos is not None:
-            alumnos = self.contenedor_alumnos
-        else:
-            try:
-                alumno = Alumno()
-                alumnos = alumno.leerJson("alumnos.json")
-            except FileNotFoundError:
-                print("No hay alumnos registrados. Primero debe registrar alumnos.")
-                return
-
-        if not alumnos.items:
-            print("No hay alumnos registrados. Primero debe registrar alumnos.")
-            return
-        
-        print("\nAlumnos disponibles:")
-        for alumno in alumnos.items:
-            print(f"ID: {alumno.id} - {alumno.nombre} {alumno.apellido_paterno} {alumno.apellido_materno}")
-        
-        id_alumno = input("\nIngrese el ID del alumno a agregar al grupo: ")
-        alumno_encontrado = None
-        for alumno in alumnos.items:
-            if str(alumno.id) == id_alumno:
-                alumno_encontrado = alumno
-                break
-        
-        if alumno_encontrado is None:
-            print("Alumno no encontrado")
-            return
-
-        for alumno in grupo_encontrado.alumnos.items:
-            if str(alumno.id) == id_alumno:
-                print("Este alumno ya está en el grupo")
-                return
-
-        grupo_encontrado.alumnos.agregar(alumno_encontrado)
-        if not self.contenedor_proporcionado:
-            self.grupos.guardarJson("grupos.json")
-            print("Cambios guardados en archivo")
-        else:
-            print("Los cambios se mantienen en memoria")
-        print("Alumno agregado al grupo correctamente")
 
     def eliminarAlumnoDeGrupo(self):
-        if not self.contenedor_proporcionado and not os.path.exists("grupos.json"):
-            print("Error: El archivo grupos.json no existe")
-            return
-            
         self.mostrarGrupos()
         id_grupo = input("\nIngrese el ID del grupo del que desea eliminar un alumno: ")
         
@@ -207,11 +205,7 @@ class InterfazGrupo:
         for i, alumno in enumerate(grupo_encontrado.alumnos.items):
             if str(alumno.id) == id_alumno:
                 del grupo_encontrado.alumnos.items[i]
-                if not self.contenedor_proporcionado:
-                    self.grupos.guardarJson("grupos.json")
-                    print("Cambios guardados en archivo")
-                else:
-                    print("Los cambios se mantienen en memoria")
+                self.grupos.guardarJson("grupos.json")
                 print("Alumno eliminado del grupo correctamente")
                 return
         
@@ -224,7 +218,6 @@ class InterfazGrupo:
             print("2. Mostrar grupos")
             print("3. Actualizar grupo")
             print("4. Eliminar grupo")
-            print("5. Agregar alumno a grupo")
             print("6. Eliminar alumno de grupo")
             print("7. Salir")
             opcion = input("Ingrese una opcion: ")
@@ -237,8 +230,6 @@ class InterfazGrupo:
                 self.actualizarGrupo()
             elif opcion == "4":
                 self.eliminarGrupo()
-            elif opcion == "5":
-                self.agregarAlumnoAGrupo()
             elif opcion == "6":
                 self.eliminarAlumnoDeGrupo()
             elif opcion == "7":
@@ -248,4 +239,8 @@ class InterfazGrupo:
 
 if __name__ == "__main__":
     interfaz = InterfazGrupo()
-    interfaz.menu_interactivo() 
+    interfaz.menu_interactivo()
+
+    #contenedor = Arreglo()
+    #interfaz = InterfazGrupo(contenedor_grupos=contenedor)
+    #interfaz.menu_interactivo()
