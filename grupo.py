@@ -66,14 +66,14 @@ class Grupo(Arreglo):
             
             return [grupo_dict]
     
-    @staticmethod
-    def leerJson(archivo):
+    
+    def leerJson(self, archivo):
         with open(archivo, "r", encoding="utf-8") as f:
             datos = json.load(f)
         return Grupo.desde_json(datos)
 
-    @staticmethod
-    def desde_json(datos):
+    
+    def desde_json(self, datos):
         grupos = Grupo()
         
         if isinstance(datos, dict):
@@ -178,7 +178,7 @@ class Grupo(Arreglo):
             json.dump(datos, f, indent=4, ensure_ascii=False)
         
         if self.es_contenedor:
-            self.mongo_manager.guardar(archivo, datos)
+            self.mongo_manager.guardar(archivo, datos, "grupos")
 
     
     def cambiarNombre(self, nombre):

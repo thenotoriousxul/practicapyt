@@ -2,6 +2,7 @@ from alumno import Alumno
 import json
 import os
 from arreglo import Arreglo
+from mongodb_manager import MongoDBManager
 
 class InterfazAlumno:
     def __init__(self, contenedor_alumnos=None):
@@ -115,7 +116,8 @@ class InterfazAlumno:
             print("2. Mostrar alumnos")
             print("3. Actualizar alumno")
             print("4. Eliminar alumno")
-            print("5. Salir")
+            print("5. Estado de cola MongoDB")
+            print("6. Salir")
             opcion = input("Ingrese una opcion: ")
             
             if opcion == "1":
@@ -127,9 +129,20 @@ class InterfazAlumno:
             elif opcion == "4":
                 self.eliminarAlumno()
             elif opcion == "5":
+                self.mostrar_estado_cola()
+            elif opcion == "6":
                 break
             else:
                 print("Opción no válida")
+
+    def mostrar_estado_cola(self):
+        try:
+            mongo_manager = MongoDBManager()
+            estado = mongo_manager.obtener_estado_cola()
+            print(f"\n=== ESTADO DE COLA MONGODB ===")
+            print(estado)
+        except Exception as e:
+            print(f"Error al obtener estado de cola: {e}")
 
 if __name__ == "__main__":
     interfaz = InterfazAlumno()

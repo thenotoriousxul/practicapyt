@@ -20,33 +20,6 @@ class InterfazGrupo:
             return 1
         return max(grupo.id for grupo in self.grupos.items) + 1
     
-    def asignar_alumnos(self, grupo):
-        try:
-            alumno = Alumno()
-            alumnos = alumno.leerJson("alumnos.json")
-            if not alumnos.items:
-                print("No hay alumnos registrados.")
-                return
-
-            print("\nAlumnos disponibles:")
-            for alumno in alumnos.items:
-                print(f"ID: {alumno.id} - {alumno.nombre} {alumno.apellido_paterno} {alumno.apellido_materno}")
-
-            while True:
-                id_alumno = input("Ingrese el ID del alumno a asignar (o presione Enter para terminar): ")
-                if id_alumno == "":
-                    break
-
-                alumno_encontrado = next((a for a in alumnos.items if str(a.id) == id_alumno), None)
-                if alumno_encontrado:
-                    grupo.alumnos.items.append(alumno_encontrado)
-                    print("Alumno asignado con éxito.")
-                else:
-                    print("Alumno no encontrado.")
-        except FileNotFoundError:
-            print("Archivo de alumnos no encontrado.")
-
-
     def crearGrupo(self):
         nombre = input("Ingrese el nombre del grupo: ")
         grado = input("Ingrese el grado del grupo: ")
@@ -79,7 +52,13 @@ class InterfazGrupo:
         nuevo_id = self.obtener_siguiente_id()
         grupo = Grupo(nombre, grado, turno, salon, carrera, ciclo_escolar, maestro_encontrado, nuevo_id)
 
-        self.asignar_alumnos(grupo)
+        try:
+            alumnos = Alumno.leerJson("alumnos.json")
+            alumnos_seleccionados = alumnos.asignar_alumnos()
+            for alumno in alumnos_seleccionados:
+                grupo.alumnos.items.append(alumno)
+        except FileNotFoundError:
+            print("Archivo de alumnos no encontrado.")
 
         self.grupos.agregar(grupo)
 
@@ -176,8 +155,6 @@ class InterfazGrupo:
         
         print("Grupo no encontrado")
 
-
-
     def eliminarAlumnoDeGrupo(self):
         self.mostrarGrupos()
         id_grupo = input("\nIngrese el ID del grupo del que desea eliminar un alumno: ")
@@ -218,6 +195,7 @@ class InterfazGrupo:
             print("2. Mostrar grupos")
             print("3. Actualizar grupo")
             print("4. Eliminar grupo")
+            print("5. Estado de cola MongoDB")
             print("6. Eliminar alumno de grupo")
             print("7. Salir")
             opcion = input("Ingrese una opcion: ")
@@ -230,12 +208,24 @@ class InterfazGrupo:
                 self.actualizarGrupo()
             elif opcion == "4":
                 self.eliminarGrupo()
+            elif opcion == "5":
+                self.mostrar_estado_cola()
             elif opcion == "6":
                 self.eliminarAlumnoDeGrupo()
             elif opcion == "7":
                 break
             else:
                 print("Opción no válida")
+
+    def mostrar_estado_cola(self):
+        """Muestra el estado actual de la cola de MongoDB"""
+        try:
+            mongo_manager = MongoDBManager()
+            estado = mongo_manager.obtener_estado_cola()
+            print(f"\n=== ESTADO DE COLA MONGODB ===")
+            print(estado)
+        except Exception as e:
+            print(f"❌ Error al obtener estado de cola: {e}")
 
 if __name__ == "__main__":
     interfaz = InterfazGrupo()

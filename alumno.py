@@ -109,13 +109,37 @@ class Alumno(Arreglo):
             return len(self.items)
         return 0
 
+    def asignar_alumnos(self):
+        if not self.items:
+            print("No hay alumnos registrados.")
+            return []
+
+        print("\nAlumnos disponibles:")
+        for alumno in self.items:
+            print(f"ID: {alumno.id} - {alumno.nombre} {alumno.apellido_paterno} {alumno.apellido_materno}")
+
+        alumnos_seleccionados = []
+        while True:
+            id_alumno = input("Ingrese el ID del alumno a asignar (o presione Enter para terminar): ")
+            if id_alumno == "":
+                break
+
+            alumno_encontrado = next((a for a in self.items if str(a.id) == id_alumno), None)
+            if alumno_encontrado:
+                alumnos_seleccionados.append(alumno_encontrado)
+                print("Alumno seleccionado con éxito.")
+            else:
+                print("Alumno no encontrado.")
+        
+        return alumnos_seleccionados
+
     def guardarJson(self, archivo):
         datos = self.convertirADiccionario()
         with open(archivo, "w", encoding="utf-8") as f:
             json.dump(datos, f, indent=4, ensure_ascii=False)
         
         if self.es_contenedor:
-            self.mongo_manager.guardar(archivo, datos)
+            self.mongo_manager.guardar(archivo, datos, "alumnos")
 
 
 if __name__ == "__main__":
