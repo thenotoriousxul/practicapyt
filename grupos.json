@@ -10,5 +10,40 @@
         "maestro": null,
         "alumnos": [],
         "tipo": "Grupo"
+    },
+    {
+        "id": 2,
+        "nombre": "sa",
+        "grado": "sa",
+        "turno": "sas",
+        "salon": "as",
+        "carrera": "as",
+        "ciclo_escolar": "sa",
+        "maestro": {
+            "id": 1,
+            "nombre": "Ramiro",
+            "apellido_paterno": "Esquivel",
+            "apellido_materno": "Gómez",
+            "edad": 35,
+            "clave": "M001",
+            "carrera": "TI",
+            "materia": "Bases de Datos en la nube",
+            "tipo": "Maestro"
+        },
+        "alumnos": [
+            {
+                "id": 1,
+                "nombre": "Saul",
+                "apellido_paterno": "Sanchez",
+                "apellido_materno": "Lopez",
+                "edad": 20,
+                "matricula": "23170093",
+                "carrera": "Desarrollo y gestion de software",
+                "semestre": 3,
+                "promedio": 10,
+                "tipo": "Alumno"
+            }
+        ],
+        "tipo": "Grupo"
     }
 ]

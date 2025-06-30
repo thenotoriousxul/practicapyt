@@ -34,5 +34,17 @@
         "semestre": 2,
         "promedio": 10,
         "tipo": "Alumno"
+    },
+    {
+        "id": 4,
+        "nombre": "sa",
+        "apellido_paterno": "sa",
+        "apellido_materno": "sa",
+        "edad": "sa",
+        "matricula": "sa",
+        "carrera": "sa",
+        "semestre": "sa",
+        "promedio": "sa",
+        "tipo": "Alumno"
     }
 ]

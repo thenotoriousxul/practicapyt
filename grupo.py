@@ -70,7 +70,7 @@ class Grupo(Arreglo):
     def leerJson(self, archivo):
         with open(archivo, "r", encoding="utf-8") as f:
             datos = json.load(f)
-        return Grupo.desde_json(datos)
+        return self.desde_json(datos)
 
     
     def desde_json(self, datos):

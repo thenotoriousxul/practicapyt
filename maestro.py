@@ -41,7 +41,7 @@ class Maestro(Arreglo):
     def leerJson(self, archivo):
         with open(archivo, "r", encoding="utf-8") as f:
             datos = json.load(f)
-        return Maestro.desde_json(datos)
+        return self.desde_json(datos)
 
     def desde_json(self, datos):
         maestros = Maestro()
@@ -102,7 +102,7 @@ class Maestro(Arreglo):
         datos = self.convertirADiccionario()
         with open(archivo, "w", encoding="utf-8") as f:
             json.dump(datos, f, indent=4, ensure_ascii=False)
-              
+        
         if self.es_contenedor:
             self.mongo_manager.guardar(archivo, datos, "maestros")
 

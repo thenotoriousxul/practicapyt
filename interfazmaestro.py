@@ -10,7 +10,7 @@ class InterfazMaestro:
         if contenedor_maestros is None:
             self.maestros = Maestro()
             try:
-                self.maestros = Maestro.leerJson("maestros.json")
+                self.maestros = self.maestros.leerJson("maestros.json")
             except FileNotFoundError:
                 pass
         else:

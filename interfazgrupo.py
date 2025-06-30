@@ -11,7 +11,7 @@ class InterfazGrupo:
         if contenedor_grupos is None:
             self.grupos = Grupo()
             try:
-                self.grupos = Grupo.leerJson("grupos.json")
+                self.grupos = self.grupos.leerJson("grupos.json")
             except FileNotFoundError:
                 pass
 
