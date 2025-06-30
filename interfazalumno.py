@@ -152,7 +152,7 @@ class InterfazAlumno:
             print(f"Error al obtener estado de cola: {e}")
 
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     interfaz = InterfazAlumno()
     interfaz.menu_interactivo()
 
