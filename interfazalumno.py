@@ -135,15 +135,7 @@ class InterfazAlumno:
             else:
                 print("Opción no válida")
 
-    def mostrar_estado_cola(self):
-        try:
-            mongo_manager = MongoDBManager()
-            estado = mongo_manager.obtener_estado_cola()
-            print(f"\n=== ESTADO DE COLA MONGODB ===")
-            print(estado)
-        except Exception as e:
-            print(f"Error al obtener estado de cola: {e}")
-
+    
 if __name__ == "__main__":
     interfaz = InterfazAlumno()
     interfaz.menu_interactivo()
